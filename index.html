@@ -287,7 +287,7 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
       <span>Sistema de Conversão</span>
       <small>by Bruno Komori</small>
     </div>
-    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 8</div>
+    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 9</div>
   </div>
   <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
   <div class="form-body">
@@ -357,6 +357,7 @@ const Qs = [
   { id:'client', title:'Quem é seu cliente ideal?', hint:'Não pela idade ou renda — descreva pelo problema ou desejo que ele tem quando chega até você.', type:'area', ph:'Ex: Casais que querem fugir da rotina e ter dias de descanso real, sem abrir mão de conforto e boa gastronomia...' },
   { id:'svcs', title:'Quais são seus principais serviços?', hint:'Para cada um, escreva o nome e o resultado real para o cliente — não o nome técnico.', type:'svcs' },
   { id:'diff', title:'Por que escolher você e não o concorrente?', hint:'Seja honesto. O que você faz diferente que seus clientes percebem e valorizam?', type:'area', ph:'Ex: Diferente das grandes pousadas, aqui o atendimento é personalizado. Cada hóspede é tratado pelo nome e as preferências são lembradas...' },
+  { id:'objections', title:'Quais objeções e comportamentos seus clientes têm?', hint:'Compartilhe o que eles falam E o que fazem — ex: somem após saber o preço, comparam com concorrente, pedem desconto. Quanto mais real, melhores os scripts.', type:'area', ph:'Ex: Muitos clientes perguntam o preço e somem. Outros falam que vão pensar e nunca retornam. Pacientes com medo do procedimento também param de responder após saber que é cirurgia. Comparação com clínicas mais baratas é frequente...' },
   { id:'story', title:'Qual foi o resultado mais marcante que você gerou?', hint:'Pense num cliente que ficou muito satisfeito. O que mudou para ele depois do seu serviço?', type:'area', ph:'Ex: Um casal veio na lua de mel sem grandes expectativas. Nos mandaram uma mensagem 3 meses depois dizendo que foi a melhor experiência da vida deles juntos...' },
   { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' }
 ];
@@ -399,7 +400,7 @@ function renderQ() {
     ).join('')+'</div>';
   } else if (q.type==='text') {
     body = `<input class="q-input" type="text" placeholder="${q.ph||''}" value="${S.a[q.id]||''}" oninput="S.a['${q.id}']=this.value">`;
-  } else if (q.type==='area') {
+  } else if (q.type==='area'||q.type==='objarea') {
     body = `<textarea class="q-input" rows="5" placeholder="${q.ph||''}" oninput="S.a['${q.id}']=this.value">${S.a[q.id]||''}</textarea>`;
   } else if (q.type==='svcs') {
     body = renderSvcs();
@@ -480,7 +481,7 @@ function togCh(id, el) {
 function isValid() {
   const q = Qs[S.step];
   if (q.type==='opts') return !!S.a[q.id];
-  if (q.type==='text'||q.type==='area') return (S.a[q.id]||'').trim().length>3;
+  if (q.type==='text'||q.type==='area'||q.type==='objarea') return (S.a[q.id]||'').trim().length>3;
   if (q.type==='svcs') return S.svcs.some(s=>s.name.trim());
   if (q.type==='ch') return S.a['ch']&&S.a['ch'].length>0;
   return true;
@@ -531,6 +532,7 @@ NEGÓCIO:
 - Serviços:
 ${svcsStr}
 - Diferencial: ${S.a['diff']}
+- Objeções e comportamentos reais dos clientes: ${S.a['objections'] || 'Não informado'}
 - Melhor história: ${S.a['story']}
 - Canal: ${chTxt}
 
@@ -540,6 +542,8 @@ REGRAS:
 - Instagram DM: mais curto e direto
 - Use emojis com moderação (1-2 por mensagem)
 - Nunca mencione preço na recepção e qualificação
+- Use as objeções reais informadas para criar scripts de objeção personalizados e específicos
+- Para o follow-up, considere os comportamentos de sumiço informados (ex: some após ver preço)
 - Adapte ao segmento e tom do negócio
 
 Retorne APENAS JSON válido sem markdown:
