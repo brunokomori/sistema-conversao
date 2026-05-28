@@ -358,7 +358,7 @@ const Qs = [
   { id:'svcs', title:'Quais são seus principais serviços?', hint:'Para cada um, escreva o nome e o resultado real para o cliente — não o nome técnico.', type:'svcs' },
   { id:'diff', title:'Por que escolher você e não o concorrente?', hint:'Seja honesto. O que você faz diferente que seus clientes percebem e valorizam?', type:'area', ph:'Ex: Diferente das grandes pousadas, aqui o atendimento é personalizado. Cada hóspede é tratado pelo nome e as preferências são lembradas...' },
   { id:'objections', title:'Quais objeções e comportamentos seus clientes têm?', hint:'Compartilhe o que eles falam E o que fazem — ex: somem após saber o preço, comparam com concorrente, pedem desconto. Quanto mais real, melhores os scripts.', type:'area', ph:'Ex: Muitos clientes perguntam o preço e somem. Outros falam que vão pensar e nunca retornam. Pacientes com medo do procedimento também param de responder após saber que é cirurgia. Comparação com clínicas mais baratas é frequente...' },
-  { id:'story', title:'Qual foi o resultado mais marcante que você gerou?', hint:'Pense num cliente que ficou muito satisfeito. O que mudou para ele depois do seu serviço?', type:'area', ph:'Ex: Um casal veio na lua de mel sem grandes expectativas. Nos mandaram uma mensagem 3 meses depois dizendo que foi a melhor experiência da vida deles juntos...' },
+  { id:'story', title:'Algum cliente ficou satisfeito e te deu um retorno positivo?', hint:'Pode ser um elogio, uma mensagem, uma avaliação ou um cliente fiel que sempre volta. Não precisa ser algo grandioso — qualquer retorno positivo já serve.', type:'area', ph:'Ex: Uma cliente me mandou mensagem dizendo que nunca tinha visto um serviço tão cuidadoso. Ou: Tenho um cliente que me chama todo mês há 2 anos e sempre indica amigos...' },
   { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' },
   { id:'email', title:'Onde enviamos uma cópia dos seus scripts?', hint:'Opcional — mas recomendamos preencher para receber melhorias e novidades do sistema.', type:'email', ph:'seu@email.com.br' }
 ];
@@ -549,6 +549,7 @@ REGRAS:
 - Use as objeções reais informadas para criar scripts de objeção personalizados e específicos
 - Para o follow-up, considere os comportamentos de sumiço informados (ex: some após ver preço)
 - Adapte ao segmento e tom do negócio
+- O Bloco 0 é para quem usa WhatsApp Business ou Instagram com perfil comercial — deixe as mensagens curtas, acolhedoras e com uma pergunta simples de qualificação no final
 
 FORMATO DOS SCRIPTS:
 - Use [NOME DO CLIENTE] onde o atendente deve inserir o nome da pessoa
@@ -594,7 +595,10 @@ function renderScripts(sc, chTxt) {
 
   // BLOCO 0 — Saudação Automática
   if(sc.bloco0) {
-    let b0 = `<div class="tip-box" style="margin-bottom:16px;">🤖 Configure uma vez e funciona sozinho — antes mesmo de você responder.</div>`;
+    let b0 = `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;font-size:13px;color:#92400e;margin-bottom:20px;">
+      <strong>Este bloco é opcional</strong> — voltado para quem usa ou quer configurar o <strong>WhatsApp Business</strong> ou o <strong>Instagram com perfil comercial</strong>.<br><br>
+      A saudação automática faz o lead se sentir atendido imediatamente — mesmo antes de você responder. Configure uma vez e funciona sozinho.
+    </div>`;
 
     if(hasWA && sc.bloco0.saudacao_whatsapp) {
       b0 += rScript('💬 Saudação — WhatsApp Business', sc.bloco0.saudacao_whatsapp);
@@ -622,7 +626,7 @@ function renderScripts(sc, chTxt) {
     }
     b0 += `</div>`;
 
-    h += rSec('🤖','Bloco 0 — Saudação Automática', b0);
+    h += rSec('🤖','Bloco 0 — Saudação Automática (Opcional)', b0);
   }
 
   // BLOCO 1 — Recepção
@@ -708,9 +712,21 @@ function rSec(icon,title,content) {
 
 function rScript(label,text) {
   const id='st_'+Math.random().toString(36).substr(2,7);
+
+  // Extract main message — remove ⏱ QUANDO USAR and 🔵 PERSONALIZE lines
+  function extractMsg(t) {
+    return t.split('\n')
+      .filter(l => !l.startsWith('⏱') && !l.startsWith('🔵') && l.trim() !== '')
+      .join('\n').trim();
+  }
+
+  // Store clean text in data attribute
+  const cleanText = extractMsg(text);
+  const encoded = encodeURIComponent(cleanText);
+
   return `<div>
     ${label?`<div class="slabel">${label}</div>`:''}
-    <div class="stext" id="${id}">
+    <div class="stext" id="${id}" data-clean="${encoded}">
       <button class="copy-btn" onclick="cpyScript('${id}')">Copiar</button>
       ${text}
     </div>
@@ -719,7 +735,8 @@ function rScript(label,text) {
 
 function cpyScript(id) {
   const el=document.getElementById(id);
-  const txt=el.innerText.replace('Copiar','').trim();
+  const encoded = el.getAttribute('data-clean');
+  const txt = encoded ? decodeURIComponent(encoded) : el.innerText.replace('Copiar','').replace(/⏱[^\n]*/g,'').replace(/🔵[^\n]*/g,'').trim();
   navigator.clipboard.writeText(txt).then(()=>{
     const btn=el.querySelector('.copy-btn');
     if(btn){btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='Copiar',2000);}
