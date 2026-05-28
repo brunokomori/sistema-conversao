@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Conversão — by Bruno Komori</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f2;
+  --white: #ffffff;
+  --dark: #1a1814;
+  --dark2: #2e2b26;
+  --accent: #2563eb;
+  --accent-light: #eff6ff;
+  --accent2: #16a34a;
+  --text: #1a1814;
+  --text-soft: #57534e;
+  --text-muted: #a8a29e;
+  --border: #e7e5e1;
+  --surface: #ffffff;
+  --surface2: #f7f5f2;
+  --error: #dc2626;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.07);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Nunito',sans-serif; font-weight:400; line-height:1.6; min-height:100vh; }
+
+/* PAGES */
+#page-landing, #page-form, #page-loading, #page-result { display:none; }
+#page-landing { display:block; }
+
+/* NAV */
+.nav { display:flex; align-items:center; justify-content:space-between; padding:20px 48px; background:var(--white); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; }
+.nav-brand span { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--dark); display:block; line-height:1.2; }
+.nav-brand small { font-size:11px; color:var(--text-muted); }
+.nav-cta { background:var(--accent); color:white; border:none; padding:10px 24px; border-radius:100px; font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
+.nav-cta:hover { background:#1d4ed8; transform:translateY(-1px); }
+
+/* HERO */
+.hero { padding:80px 48px 0; max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; min-height:calc(100vh - 70px); }
+.hero-tag { display:inline-flex; align-items:center; gap:6px; background:var(--accent-light); color:var(--accent); font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:6px 14px; border-radius:100px; margin-bottom:24px; }
+.hero h1 { font-family:'Playfair Display',serif; font-size:52px; line-height:1.15; color:var(--dark); margin-bottom:20px; }
+.hero h1 em { color:var(--accent); font-style:italic; }
+.hero-sub { font-size:17px; color:var(--text-soft); line-height:1.7; margin-bottom:36px; max-width:440px; }
+.hero-cta { display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:white; border:none; padding:16px 32px; border-radius:100px; font-family:'Nunito',sans-serif; font-weight:700; font-size:16px; cursor:pointer; transition:all 0.25s; box-shadow:0 4px 20px rgba(37,99,235,0.3); }
+.hero-cta:hover { background:#1d4ed8; transform:translateY(-2px); box-shadow:0 8px 28px rgba(37,99,235,0.4); }
+.hero-cta-note { font-size:12px; color:var(--text-muted); margin-top:12px; }
+.hero-card { background:var(--white); border-radius:20px; padding:32px; box-shadow:var(--shadow-lg); border:1px solid var(--border); }
+.hero-card-header { display:flex; align-items:center; gap:10px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+.hero-card-avatar { width:40px; height:40px; background:var(--accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.hero-card-info h4 { font-size:14px; font-weight:700; color:var(--dark); }
+.hero-card-info p { font-size:12px; color:var(--text-muted); }
+.chat-bubble { border-radius:16px; padding:12px 16px; font-size:13px; line-height:1.5; margin-bottom:10px; max-width:85%; }
+.chat-bubble.sys { background:var(--accent-light); color:var(--accent); font-weight:600; border-radius:16px 16px 16px 4px; }
+.chat-bubble.usr { background:var(--accent); color:white; margin-left:auto; border-radius:16px 16px 4px 16px; }
+.chat-bubble.res { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; border-radius:16px 16px 16px 4px; max-width:100%; }
+
+/* FEATURES */
+.features { padding:80px 48px; max-width:1100px; margin:0 auto; }
+.features-label { text-align:center; font-size:12px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:16px; }
+.features h2 { font-family:'Playfair Display',serif; font-size:36px; text-align:center; color:var(--dark); margin-bottom:12px; }
+.features-sub { text-align:center; font-size:15px; color:var(--text-soft); margin-bottom:56px; }
+.features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.feat { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:28px; transition:all 0.2s; }
+.feat:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.feat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px; }
+.feat-icon.blue { background:var(--accent-light); }
+.feat-icon.green { background:#f0fdf4; }
+.feat-icon.gold { background:#fffbeb; }
+.feat h3 { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:8px; }
+.feat p { font-size:13px; color:var(--text-soft); line-height:1.6; }
+
+/* HOW */
+.how { background:var(--dark); padding:80px 48px; }
+.how-inner { max-width:1100px; margin:0 auto; }
+.how h2 { font-family:'Playfair Display',serif; font-size:36px; color:white; text-align:center; margin-bottom:56px; }
+.how-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; position:relative; }
+.how-steps::before { content:''; position:absolute; top:28px; left:10%; right:10%; height:1px; background:rgba(255,255,255,0.1); }
+.how-step { text-align:center; }
+.how-step-num { width:56px; height:56px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:white; margin:0 auto 20px; position:relative; z-index:1; }
+.how-step h4 { font-size:15px; font-weight:700; color:white; margin-bottom:8px; }
+.how-step p { font-size:13px; color:rgba(255,255,255,0.5); line-height:1.5; }
+
+/* CTA */
+.cta-section { padding:80px 48px; text-align:center; max-width:600px; margin:0 auto; }
+.cta-section h2 { font-family:'Playfair Display',serif; font-size:40px; color:var(--dark); margin-bottom:16px; line-height:1.2; }
+.cta-section p { font-size:15px; color:var(--text-soft); margin-bottom:32px; }
+.badge-free { display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; color:var(--accent2); border:1px solid #bbf7d0; font-size:12px; font-weight:700; padding:6px 14px; border-radius:100px; margin-bottom:20px; }
+
+footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center; padding:24px; font-size:12px; }
+
+/* FORM PAGE */
+.form-header { background:var(--white); border-bottom:1px solid var(--border); padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
+.form-header-brand span { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--dark); display:block; }
+.form-header-brand small { font-size:11px; color:var(--text-muted); }
+.prog-bar { height:4px; background:var(--border); }
+.prog-fill { height:100%; background:var(--accent); border-radius:100px; transition:width 0.4s ease; }
+.form-body { display:flex; align-items:center; justify-content:center; padding:40px 24px; min-height:calc(100vh - 120px); }
+.form-container { width:100%; max-width:620px; }
+.qcard { background:var(--white); border-radius:20px; padding:40px; box-shadow:var(--shadow); border:1px solid var(--border); }
+.q-step { font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+.q-title { font-family:'Playfair Display',serif; font-size:26px; color:var(--dark); line-height:1.3; margin-bottom:8px; }
+.q-hint { font-size:13px; color:var(--text-muted); margin-bottom:28px; line-height:1.5; }
+.q-input { width:100%; background:var(--surface2); border:2px solid var(--border); border-radius:12px; padding:14px 18px; font-family:'Nunito',sans-serif; font-size:15px; color:var(--text); outline:none; transition:border-color 0.2s; resize:none; }
+.q-input:focus { border-color:var(--accent); background:white; }
+.q-input::placeholder { color:var(--text-muted); }
+
+/* OPTIONS */
+.opts { display:flex; flex-direction:column; gap:8px; }
+.opt { display:flex; align-items:center; gap:12px; padding:10px 14px; border:2px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.15s; background:var(--white); }
+.opt:hover { border-color:var(--accent); background:var(--accent-light); }
+.opt.sel { border-color:var(--accent); background:var(--accent-light); }
+.opt .oi { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+.opt h4 { font-size:13px; font-weight:700; color:var(--dark); margin-bottom:2px; }
+.opt p { font-size:11px; color:var(--text-muted); }
+
+/* SERVICES */
+.svc-header { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px; }
+.svc-col { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+.svc-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+.add-svc { display:flex; align-items:center; gap:8px; background:none; border:2px dashed var(--border); border-radius:12px; padding:12px 18px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:13px; color:var(--text-muted); transition:all 0.2s; width:100%; }
+.add-svc:hover { border-color:var(--accent); color:var(--accent); }
+
+/* CHANNELS */
+.ch-opts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.ch-btn { display:flex; flex-direction:column; align-items:center; gap:6px; padding:20px 8px; border:2px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s; background:var(--white); }
+.ch-btn:hover { border-color:var(--accent); background:var(--accent-light); }
+.ch-btn.sel { border-color:var(--accent); background:var(--accent-light); }
+.ch-btn .ci { font-size:28px; }
+.ch-btn span { font-size:13px; font-weight:700; color:var(--dark); }
+
+/* FORM NAV */
+.form-nav { display:flex; justify-content:space-between; align-items:center; margin-top:28px; }
+.btn-back { background:none; border:2px solid var(--border); border-radius:100px; padding:10px 22px; font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; color:var(--text-soft); cursor:pointer; transition:all 0.2s; }
+.btn-back:hover { border-color:var(--text-soft); }
+.btn-next { background:var(--accent); border:none; border-radius:100px; padding:12px 28px; font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; color:white; cursor:pointer; transition:all 0.2s; }
+.btn-next:hover { background:#1d4ed8; transform:translateY(-1px); }
+
+/* LOADING */
+.loading-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:20px; background:var(--bg); }
+.loading-spinner { width:48px; height:48px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-steps { display:flex; flex-direction:column; gap:8px; }
+.lstep { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted); opacity:0.4; transition:opacity 0.4s; }
+.lstep.act { opacity:1; color:var(--accent); }
+.lstep.done { opacity:1; color:var(--accent2); }
+
+/* RESULT */
+.result-header { background:var(--dark); padding:40px 48px; text-align:center; }
+.result-header h1 { font-family:'Playfair Display',serif; font-size:36px; color:white; margin-bottom:8px; }
+.result-header p { font-size:15px; color:rgba(255,255,255,0.5); }
+.result-body { max-width:820px; margin:0 auto; padding:40px 24px 80px; }
+.result-intro { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius); padding:20px 24px; margin-bottom:32px; display:flex; gap:14px; align-items:flex-start; }
+.result-intro .ri { font-size:24px; flex-shrink:0; margin-top:2px; }
+.result-intro h4 { font-size:14px; font-weight:700; color:#166534; margin-bottom:4px; }
+.result-intro p { font-size:13px; color:#166534; opacity:0.8; }
+.rsec { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:20px; }
+.rsh { padding:18px 24px; background:var(--surface2); border-bottom:1px solid var(--border); font-size:15px; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:10px; }
+.rsb { padding:24px; }
+.slabel { font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin:0 0 6px; }
+.stext { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:14px 18px; font-size:14px; color:var(--text); line-height:1.7; white-space:pre-line; margin-bottom:16px; position:relative; }
+.stext:last-child { margin-bottom:0; }
+.copy-btn { position:absolute; top:8px; right:8px; background:var(--white); border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-size:11px; font-weight:700; color:var(--text-muted); cursor:pointer; font-family:'Nunito',sans-serif; transition:all 0.2s; }
+.copy-btn:hover { color:var(--accent); border-color:var(--accent); }
+.arc-item { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+.arc-lbl { font-size:10px; font-weight:700; padding:3px 8px; background:var(--accent-light); color:var(--accent); border-radius:6px; flex-shrink:0; margin-top:2px; }
+.arc-txt { font-size:13px; color:var(--text-soft); line-height:1.6; }
+.obj-block { background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:12px; }
+.obj-header { padding:14px 20px; background:var(--white); border-bottom:1px solid var(--border); font-size:14px; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:10px; }
+.obj-body { padding:16px 20px; }
+.fu-block { border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:12px; }
+.fu-header { padding:12px 20px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.fu-header span { font-size:14px; font-weight:700; color:var(--dark); }
+.fu-header small { font-size:11px; color:var(--text-muted); }
+.fu-body { padding:14px 20px; font-size:13px; color:var(--text); line-height:1.7; white-space:pre-line; }
+.result-actions { display:flex; gap:12px; margin-top:32px; flex-wrap:wrap; }
+.btn-print { display:flex; align-items:center; gap:8px; background:var(--dark); color:white; border:none; border-radius:100px; padding:12px 24px; font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
+.btn-print:hover { background:var(--dark2); }
+.btn-restart { display:flex; align-items:center; gap:8px; background:white; color:var(--text-soft); border:2px solid var(--border); border-radius:100px; padding:12px 24px; font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
+.btn-restart:hover { border-color:var(--text-soft); }
+.tip-box { background:var(--accent-light); border-radius:10px; padding:14px 16px; font-size:13px; color:var(--accent); margin-top:12px; }
+.err-box { background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:16px 20px; font-size:13px; color:var(--error); margin-bottom:16px; }
+
+@media (max-width:768px) {
+  .nav { padding:16px 20px; }
+  .hero { grid-template-columns:1fr; padding:48px 20px 0; gap:40px; min-height:auto; }
+  .hero h1 { font-size:36px; }
+  .hero-right { display:none; }
+  .features { padding:60px 20px; }
+  .features-grid { grid-template-columns:1fr; }
+  .how { padding:60px 20px; }
+  .how-steps { grid-template-columns:1fr 1fr; }
+  .how-steps::before { display:none; }
+  .cta-section { padding:60px 20px; }
+  .qcard { padding:28px 20px; }
+  .svc-row { grid-template-columns:1fr; }
+  .result-header { padding:32px 20px; }
+  .result-header h1 { font-size:28px; }
+}
+
+@media print {
+  .nav, .form-header, .result-actions, .copy-btn { display:none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="page-landing">
+  <nav class="nav">
+    <div class="nav-brand">
+      <span>Sistema de Conversão</span>
+      <small>by Bruno Komori</small>
+    </div>
+    <button class="nav-cta" onclick="startForm()">Gerar meus scripts grátis →</button>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="hero-tag">✦ 100% Gratuito · Versão Beta</div>
+      <h1>Atenda melhor.<br>Feche <em>mais.</em></h1>
+      <p class="hero-sub">Responda algumas perguntas sobre o seu negócio e receba scripts de atendimento personalizados — prontos pra usar no WhatsApp e Instagram.</p>
+      <button class="hero-cta" onclick="startForm()">Criar meus scripts agora →</button>
+      <div class="hero-cta-note">✓ Gratuito &nbsp;·&nbsp; ✓ Sem cadastro &nbsp;·&nbsp; ✓ Pronto em 5 minutos</div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <div class="hero-card-avatar">💬</div>
+          <div class="hero-card-info">
+            <h4>Seu atendimento transformado</h4>
+            <p>Scripts personalizados para o seu negócio</p>
+          </div>
+        </div>
+        <div class="chat-bubble sys">Olá, [Nome]! Vi que você tem interesse em nosso serviço. Me conta — o que te motivou a buscar isso agora? 😊</div>
+        <div class="chat-bubble usr">Tenho um evento importante em 2 meses</div>
+        <div class="chat-bubble sys">Que incrível! Esse é exatamente o momento certo. Deixa eu te mostrar como conseguimos resolver isso pra você...</div>
+        <div class="chat-bubble res">✓ Script gerado com base no seu negócio</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-label">O que você recebe</div>
+    <h2>Tudo que precisa pra converter mais</h2>
+    <p class="features-sub">Scripts prontos para cada etapa da jornada do seu lead — do primeiro contato ao fechamento.</p>
+    <div class="features-grid">
+      <div class="feat"><div class="feat-icon blue">💬</div><h3>Recepção que engaja</h3><p>Primeiro contato que acolhe, contextualiza e abre a conversa sem parecer robô.</p></div>
+      <div class="feat"><div class="feat-icon blue">🔍</div><h3>Qualificação natural</h3><p>Perguntas que descobrem a dor real do lead sem parecer interrogatório.</p></div>
+      <div class="feat"><div class="feat-icon green">🎯</div><h3>Apresentação que vende</h3><p>Script que usa as palavras do próprio lead e mostra o resultado — não o processo técnico.</p></div>
+      <div class="feat"><div class="feat-icon gold">🛡️</div><h3>Quebra de objeções</h3><p>Respostas para as 5 objeções mais comuns adaptadas ao jeito que você fala.</p></div>
+      <div class="feat"><div class="feat-icon blue">🔄</div><h3>Follow-up inteligente</h3><p>4 mensagens para quando o lead some — sem ser chato e sem perder a venda.</p></div>
+      <div class="feat"><div class="feat-icon green">📱</div><h3>WhatsApp e Instagram</h3><p>Scripts adaptados para cada canal com tom, tamanho e formato certo.</p></div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="how-inner">
+      <h2>Como funciona</h2>
+      <div class="how-steps">
+        <div class="how-step"><div class="how-step-num">1</div><h4>Conte sobre seu negócio</h4><p>Responda perguntas simples sobre o que você faz e quem você atende</p></div>
+        <div class="how-step"><div class="how-step-num">2</div><h4>Descreva seus serviços</h4><p>Liste o que você oferece e qual resultado real gera pro cliente</p></div>
+        <div class="how-step"><div class="how-step-num">3</div><h4>A IA processa tudo</h4><p>Nossa inteligência cria scripts personalizados com base no seu negócio</p></div>
+        <div class="how-step"><div class="how-step-num">4</div><h4>Receba e aplique</h4><p>Scripts prontos pra copiar e colar no WhatsApp ou Instagram</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="badge-free">✓ Gratuito durante o Beta</div>
+    <h2>Pronto pra atender melhor e fechar mais?</h2>
+    <p>Leva menos de 5 minutos. Sem cadastro, sem cartão de crédito.</p>
+    <button class="hero-cta" onclick="startForm()">Gerar meus scripts agora →</button>
+  </section>
+
+  <footer>© 2025 Sistema de Conversão · by Bruno Komori · Versão Beta Gratuita</footer>
+</div>
+
+<!-- FORM -->
+<div id="page-form">
+  <div class="form-header">
+    <div class="form-header-brand">
+      <span>Sistema de Conversão</span>
+      <small>by Bruno Komori</small>
+    </div>
+    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 8</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
+  <div class="form-body">
+    <div class="form-container">
+      <div id="q-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="page-loading">
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p style="font-size:15px; font-weight:700; color:var(--dark);">Criando seus scripts personalizados...</p>
+    <div class="loading-steps">
+      <div class="lstep" id="ls0">🔍 Analisando seu negócio...</div>
+      <div class="lstep" id="ls1">✍️ Criando scripts de recepção...</div>
+      <div class="lstep" id="ls2">🛡️ Montando respostas para objeções...</div>
+      <div class="lstep" id="ls3">🔄 Preparando sequência de follow-up...</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="page-result">
+  <div class="result-header">
+    <h1>Seus Scripts Estão Prontos ✦</h1>
+    <p id="result-subtitle">Scripts personalizados para o seu negócio</p>
+  </div>
+  <div class="result-body">
+    <div class="result-intro">
+      <div class="ri">💡</div>
+      <div>
+        <h4>Como usar esses scripts</h4>
+        <p>Adapte com suas próprias palavras antes de usar. Quanto mais natural soar, mais vai converter. Comece com a Recepção e siga o fluxo — cada bloco alimenta o próximo.</p>
+      </div>
+    </div>
+    <div id="err-box" class="err-box" style="display:none"></div>
+    <div id="scripts-output"></div>
+    <div class="result-actions">
+      <button class="btn-print" onclick="window.print()">🖨️ Salvar / Imprimir</button>
+      <button class="btn-restart" onclick="restartForm()">↩ Gerar novos scripts</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const S = { step:0, a:{}, svcs:[{name:'',benefit:''}] };
+
+const Qs = [
+  { id:'segment', title:'Qual é o seu segmento?', hint:'Escolha a categoria que melhor descreve seu negócio.', type:'opts',
+    opts:[
+      {i:'🏥',l:'Saúde',d:'Médicos, dentistas, psicólogos, clínicas'},
+      {i:'✂️',l:'Estética e beleza',d:'Salão, barbearia, nail designer'},
+      {i:'💪',l:'Fitness e bem-estar',d:'Personal, nutricionista, pilates'},
+      {i:'🏠',l:'Casa e reformas',d:'Arquitetura, decoração, construção'},
+      {i:'📚',l:'Educação e consultoria',d:'Coaching, cursos, mentorias'},
+      {i:'📸',l:'Criativo e comunicação',d:'Fotografia, design, marketing'},
+      {i:'🍽️',l:'Alimentação',d:'Restaurante, delivery, confeitaria'},
+      {i:'🏨',l:'Hospitalidade',d:'Pousada, hotel, turismo'},
+      {i:'🔧',l:'Serviços técnicos',d:'TI, elétrica, mecânica'},
+      {i:'✨',l:'Outro',d:'Meu segmento não está listado'}
+    ]
+  },
+  { id:'name', title:'Qual é o nome do seu negócio?', hint:'Pode ser seu nome, o nome da empresa ou como seus clientes te chamam.', type:'text', ph:'Ex: Pousada Rangai, Dr. Carlos Souza, Studio Ana Lima...' },
+  { id:'desc', title:'Descreva seu negócio em 2 frases.', hint:'Como você apresentaria para um amigo? Seja natural, sem formalidade.', type:'area', ph:'Ex: Somos uma pousada em Maragogi com chalés à beira-mar. Oferecemos uma experiência tranquila para casais e famílias que buscam descanso real...' },
+  { id:'client', title:'Quem é seu cliente ideal?', hint:'Não pela idade ou renda — descreva pelo problema ou desejo que ele tem quando chega até você.', type:'area', ph:'Ex: Casais que querem fugir da rotina e ter dias de descanso real, sem abrir mão de conforto e boa gastronomia...' },
+  { id:'svcs', title:'Quais são seus principais serviços?', hint:'Para cada um, escreva o nome e o resultado real para o cliente — não o nome técnico.', type:'svcs' },
+  { id:'diff', title:'Por que escolher você e não o concorrente?', hint:'Seja honesto. O que você faz diferente que seus clientes percebem e valorizam?', type:'area', ph:'Ex: Diferente das grandes pousadas, aqui o atendimento é personalizado. Cada hóspede é tratado pelo nome e as preferências são lembradas...' },
+  { id:'story', title:'Qual foi o resultado mais marcante que você gerou?', hint:'Pense num cliente que ficou muito satisfeito. O que mudou para ele depois do seu serviço?', type:'area', ph:'Ex: Um casal veio na lua de mel sem grandes expectativas. Nos mandaram uma mensagem 3 meses depois dizendo que foi a melhor experiência da vida deles juntos...' },
+  { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' }
+];
+
+function show(id) {
+  ['page-landing','page-form','page-loading','page-result'].forEach(p => {
+    document.getElementById(p).style.display = 'none';
+  });
+  document.getElementById(id).style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function startForm() {
+  S.step=0; S.a={}; S.svcs=[{name:'',benefit:''}];
+  show('page-form');
+  renderQ();
+}
+
+function restartForm() {
+  show('page-landing');
+}
+
+function updateProg() {
+  const pct = ((S.step+1)/Qs.length)*100;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('step-counter').textContent = 'Passo '+(S.step+1)+' de '+Qs.length;
+}
+
+function renderQ() {
+  updateProg();
+  const q = Qs[S.step];
+  let body = '';
+
+  if (q.type==='opts') {
+    body = '<div class="opts">'+q.opts.map(o =>
+      `<div class="opt ${S.a[q.id]===o.l?'sel':''}" onclick="selOpt('${q.id}','${o.l.replace(/'/g,"\\'")}',this)">
+        <span class="oi">${o.i}</span>
+        <div><h4>${o.l}</h4><p>${o.d}</p></div>
+      </div>`
+    ).join('')+'</div>';
+  } else if (q.type==='text') {
+    body = `<input class="q-input" type="text" placeholder="${q.ph||''}" value="${S.a[q.id]||''}" oninput="S.a['${q.id}']=this.value">`;
+  } else if (q.type==='area') {
+    body = `<textarea class="q-input" rows="5" placeholder="${q.ph||''}" oninput="S.a['${q.id}']=this.value">${S.a[q.id]||''}</textarea>`;
+  } else if (q.type==='svcs') {
+    body = renderSvcs();
+  } else if (q.type==='ch') {
+    const sel = S.a['ch']||[];
+    body = '<div class="ch-opts">'+
+      [{id:'whatsapp',i:'💬',l:'WhatsApp'},{id:'instagram',i:'📸',l:'Instagram'},{id:'ambos',i:'📱',l:'Ambos'}].map(c =>
+        `<div class="ch-btn ${sel.includes(c.id)?'sel':''}" onclick="togCh('${c.id}',this)">
+          <span class="ci">${c.i}</span><span>${c.l}</span>
+        </div>`
+      ).join('')+'</div>';
+  }
+
+  document.getElementById('q-area').innerHTML = `
+    <div class="qcard">
+      <div class="q-step">Passo ${S.step+1} de ${Qs.length}</div>
+      <div class="q-title">${q.title}</div>
+      <div class="q-hint">${q.hint}</div>
+      ${body}
+      <div class="form-nav">
+        ${S.step>0 ? '<button class="btn-back" onclick="prevStep()">← Voltar</button>' : '<div></div>'}
+        <button class="btn-next" onclick="nextStep()">
+          ${S.step===Qs.length-1 ? 'Gerar meus scripts ✨' : 'Continuar →'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderSvcs() {
+  return `<div>
+    <div class="svc-header">
+      <div class="svc-col">Nome do serviço</div>
+      <div class="svc-col">Resultado real para o cliente</div>
+    </div>
+    <div id="svc-rows">
+      ${S.svcs.map((s,i) => `
+        <div class="svc-row">
+          <input class="q-input" type="text" placeholder="Ex: Chalé à beira-mar" value="${s.name}" oninput="S.svcs[${i}].name=this.value">
+          <input class="q-input" type="text" placeholder="Ex: Acordar com o som do mar" value="${s.benefit}" oninput="S.svcs[${i}].benefit=this.value">
+        </div>`).join('')}
+    </div>
+    <button class="add-svc" onclick="addSvc()">+ Adicionar outro serviço</button>
+  </div>`;
+}
+
+function addSvc() {
+  S.svcs.push({name:'',benefit:''});
+  const i = S.svcs.length-1;
+  const row = document.createElement('div');
+  row.className = 'svc-row';
+  row.innerHTML = `
+    <input class="q-input" type="text" placeholder="Ex: Pacote de mergulho" value="" oninput="S.svcs[${i}].name=this.value">
+    <input class="q-input" type="text" placeholder="Ex: Experiência inesquecível no mar" value="" oninput="S.svcs[${i}].benefit=this.value">`;
+  document.getElementById('svc-rows').appendChild(row);
+}
+
+function selOpt(qId, val, el) {
+  S.a[qId]=val;
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function togCh(id, el) {
+  if (!S.a['ch']) S.a['ch']=[];
+  if (id==='ambos') {
+    S.a['ch']=['ambos'];
+    document.querySelectorAll('.ch-btn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    return;
+  }
+  S.a['ch'] = S.a['ch'].filter(c=>c!=='ambos');
+  document.querySelector('.ch-btn:last-child')?.classList.remove('sel');
+  const idx = S.a['ch'].indexOf(id);
+  if (idx>-1) { S.a['ch'].splice(idx,1); el.classList.remove('sel'); }
+  else { S.a['ch'].push(id); el.classList.add('sel'); }
+}
+
+function isValid() {
+  const q = Qs[S.step];
+  if (q.type==='opts') return !!S.a[q.id];
+  if (q.type==='text'||q.type==='area') return (S.a[q.id]||'').trim().length>3;
+  if (q.type==='svcs') return S.svcs.some(s=>s.name.trim());
+  if (q.type==='ch') return S.a['ch']&&S.a['ch'].length>0;
+  return true;
+}
+
+function nextStep() {
+  if (!isValid()) {
+    const c = document.querySelector('.qcard');
+    c.style.outline='2px solid var(--error)';
+    setTimeout(()=>c.style.outline='',1200);
+    return;
+  }
+  if (Qs[S.step].id==='svcs') S.a['svcs']=S.svcs.filter(s=>s.name.trim());
+  if (S.step<Qs.length-1) { S.step++; renderQ(); window.scrollTo(0,0); }
+  else generateScripts();
+}
+
+function prevStep() {
+  if (S.step>0) { S.step--; renderQ(); window.scrollTo(0,0); }
+}
+
+async function generateScripts() {
+  show('page-loading');
+  const ls = ['ls0','ls1','ls2','ls3'];
+  let li=0;
+  const iv = setInterval(()=>{
+    if(li>0){const p=document.getElementById(ls[li-1]);if(p){p.classList.remove('act');p.classList.add('done');}}
+    const c=document.getElementById(ls[li]);if(c)c.classList.add('act');
+    li++; if(li>=ls.length) clearInterval(iv);
+  },1200);
+
+  const chs = S.a['ch']||['whatsapp'];
+  const chTxt = chs.includes('ambos')?'WhatsApp e Instagram DM':
+    chs.includes('whatsapp')&&chs.includes('instagram')?'WhatsApp e Instagram DM':
+    chs.includes('instagram')?'Instagram DM':'WhatsApp';
+
+  const svcsStr = (S.a['svcs']||S.svcs.filter(s=>s.name)).map(s=>`- ${s.name}: ${s.benefit}`).join('\n');
+
+  const prompt = `Você é especialista em vendas consultivas e atendimento ao cliente no Brasil.
+
+Com base nas informações abaixo, crie scripts de atendimento personalizados para uso no ${chTxt}.
+
+NEGÓCIO:
+- Segmento: ${S.a['segment']}
+- Nome: ${S.a['name']}
+- Descrição: ${S.a['desc']}
+- Cliente ideal: ${S.a['client']}
+- Serviços:
+${svcsStr}
+- Diferencial: ${S.a['diff']}
+- Melhor história: ${S.a['story']}
+- Canal: ${chTxt}
+
+REGRAS:
+- Linguagem natural, calorosa e brasileira
+- WhatsApp: pode ser um pouco mais longo
+- Instagram DM: mais curto e direto
+- Use emojis com moderação (1-2 por mensagem)
+- Nunca mencione preço na recepção e qualificação
+- Adapte ao segmento e tom do negócio
+
+Retorne APENAS JSON válido sem markdown:
+{"recepcao":{"whatsapp":"script whatsapp","instagram":"script instagram"},"qualificacao":{"p1":"pergunta 1","p2":"pergunta 2","p3":"pergunta 3"},"apresentacao":{"problema":"frase problema","resultado":"frase resultado","explicacao":"frase explicacao","social":"frase social","confirmacao":"pergunta confirmacao"},"objecoes":{"caro":{"a":"acolhe","r":"reframe","c":"confirma"},"pensar":{"a":"...","r":"...","c":"..."},"conjuge":{"a":"...","r":"...","c":"..."},"momento":{"a":"...","r":"...","c":"..."},"concorrente":{"a":"...","r":"...","c":"..."}},"followup":{"d1":"msg dia 1","d3":"msg dia 3","d7":"msg dia 7","d15":"msg dia 15"}}`;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt})
+    });
+
+    clearInterval(iv);
+    ls.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('act');el.classList.add('done');}});
+    await new Promise(r=>setTimeout(r,400));
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Erro desconhecido');
+
+    const sc = JSON.parse(data.content.replace(/```json|```/g,'').trim());
+    document.getElementById('result-subtitle').textContent = `Scripts para ${S.a['name']} · ${chTxt}`;
+    renderScripts(sc, chTxt);
+    show('page-result');
+
+  } catch(e) {
+    clearInterval(iv);
+    document.getElementById('err-box').style.display='block';
+    document.getElementById('err-box').textContent='⚠️ Erro ao gerar os scripts: '+e.message+'. Por favor, tente novamente.';
+    show('page-result');
+  }
+}
+
+function renderScripts(sc, chTxt) {
+  const hasIG = chTxt.includes('Instagram');
+  const hasWA = chTxt.includes('WhatsApp')||!hasIG;
+  let h='';
+
+  h+=rSec('💬','Bloco 1 — Recepção',`
+    ${hasWA?rScript('WhatsApp',sc.recepcao.whatsapp):''}
+    ${hasIG?rScript('Instagram DM',sc.recepcao.instagram):''}
+    <div class="tip-box">💡 Envie em até 5 minutos após o primeiro contato. A velocidade é decisiva.</div>
+  `);
+
+  h+=rSec('🔍','Bloco 2 — Qualificação',`
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Uma pergunta por vez, conectada ao que o lead respondeu. Nunca dispare as três de uma vez.</p>
+    ${rScript('Pergunta 1',sc.qualificacao.p1)}
+    ${rScript('Pergunta 2',sc.qualificacao.p2)}
+    ${rScript('Pergunta 3',sc.qualificacao.p3)}
+  `);
+
+  h+=rSec('🎯','Bloco 3 — Apresentação (método PRES)',`
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Adapte com as palavras que o lead usou na conversa.</p>
+    ${rScript('P — Problema',sc.apresentacao.problema)}
+    ${rScript('R — Resultado',sc.apresentacao.resultado)}
+    ${rScript('E — Explicação',sc.apresentacao.explicacao)}
+    ${rScript('S — Social',sc.apresentacao.social)}
+    ${rScript('Confirmação (antes do preço)',sc.apresentacao.confirmacao)}
+  `);
+
+  const objs=[
+    {k:'caro',l:'"Tá caro"'},{k:'pensar',l:'"Vou pensar"'},
+    {k:'conjuge',l:'"Vou falar com meu parceiro(a)"'},
+    {k:'momento',l:'"Agora não é o momento"'},{k:'concorrente',l:'"Vi mais barato"'}
+  ];
+  let objH=`<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Método ARC: Acolhe → Reframe → Confirma. Sempre termine com uma pergunta.</p>`;
+  objs.forEach(o=>{
+    if(sc.objecoes[o.k]) objH+=`
+      <div class="obj-block">
+        <div class="obj-header">${o.l}</div>
+        <div class="obj-body">
+          <div class="arc-item"><span class="arc-lbl">A</span><span class="arc-txt">${sc.objecoes[o.k].a}</span></div>
+          <div class="arc-item"><span class="arc-lbl">R</span><span class="arc-txt">${sc.objecoes[o.k].r}</span></div>
+          <div class="arc-item"><span class="arc-lbl">C</span><span class="arc-txt">${sc.objecoes[o.k].c}</span></div>
+        </div>
+      </div>`;
+  });
+  h+=rSec('🛡️','Bloco 4 — Quebra de Objeções',objH);
+
+  const fus=[
+    {k:'d1',l:'Dia 1',t:'Leve, sem pressão'},
+    {k:'d3',l:'Dia 3',t:'Generoso, sem cobrar'},
+    {k:'d7',l:'Dia 7',t:'Urgência real'},
+    {k:'d15',l:'Dia 15',t:'Saída honesta'}
+  ];
+  let fuH=`<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Cada mensagem precisa entregar algo — nunca mande só "viu minha mensagem?"</p>`;
+  fus.forEach(f=>{
+    fuH+=`<div class="fu-block">
+      <div class="fu-header"><span>${f.l}</span><small>${f.t}</small></div>
+      <div class="fu-body">${sc.followup[f.k]}</div>
+    </div>`;
+  });
+  h+=rSec('🔄','Bloco 5 — Follow-up',fuH);
+
+  document.getElementById('scripts-output').innerHTML=h;
+}
+
+function rSec(icon,title,content) {
+  return `<div class="rsec"><div class="rsh">${icon} ${title}</div><div class="rsb">${content}</div></div>`;
+}
+
+function rScript(label,text) {
+  const id='st_'+Math.random().toString(36).substr(2,7);
+  return `<div>
+    ${label?`<div class="slabel">${label}</div>`:''}
+    <div class="stext" id="${id}">
+      <button class="copy-btn" onclick="cpyScript('${id}')">Copiar</button>
+      ${text}
+    </div>
+  </div>`;
+}
+
+function cpyScript(id) {
+  const el=document.getElementById(id);
+  const txt=el.innerText.replace('Copiar','').trim();
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=el.querySelector('.copy-btn');
+    if(btn){btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='Copiar',2000);}
+  });
+}
+</script>
+</body>
+</html>
