@@ -6,10 +6,11 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { prompt } = req.body;
+  const { prompt, userData } = req.body;
   if (!prompt) return res.status(400).json({ error: 'Prompt obrigatório' });
 
   try {
+    // 1. Generate scripts with Anthropic
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -30,7 +31,39 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data.error?.message || 'Erro na API' });
     }
 
-    return res.status(200).json({ content: data.content[0].text });
+    const scriptContent = data.content[0].text;
+
+    // 2. Save to Supabase if userData provided
+    if (userData && process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY) {
+      try {
+        await fetch(`${process.env.SUPABASE_URL}/rest/v1/leads`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': process.env.SUPABASE_SECRET_KEY,
+            'Authorization': `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            email: userData.email || null,
+            business_name: userData.name || null,
+            segment: userData.segment || null,
+            channel: userData.channel || null,
+            description: userData.desc || null,
+            ideal_client: userData.client || null,
+            differentiator: userData.diff || null,
+            objections: userData.objections || null,
+            best_story: userData.story || null,
+            created_at: new Date().toISOString()
+          })
+        });
+      } catch (dbError) {
+        // Don't fail the request if DB save fails
+        console.error('DB save error:', dbError);
+      }
+    }
+
+    return res.status(200).json({ content: scriptContent });
 
   } catch (error) {
     return res.status(500).json({ error: 'Erro interno: ' + error.message });
