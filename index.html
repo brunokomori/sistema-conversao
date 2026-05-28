@@ -287,7 +287,7 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
       <span>Sistema de Conversão</span>
       <small>by Bruno Komori</small>
     </div>
-    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 9</div>
+    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 10</div>
   </div>
   <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
   <div class="form-body">
@@ -359,7 +359,8 @@ const Qs = [
   { id:'diff', title:'Por que escolher você e não o concorrente?', hint:'Seja honesto. O que você faz diferente que seus clientes percebem e valorizam?', type:'area', ph:'Ex: Diferente das grandes pousadas, aqui o atendimento é personalizado. Cada hóspede é tratado pelo nome e as preferências são lembradas...' },
   { id:'objections', title:'Quais objeções e comportamentos seus clientes têm?', hint:'Compartilhe o que eles falam E o que fazem — ex: somem após saber o preço, comparam com concorrente, pedem desconto. Quanto mais real, melhores os scripts.', type:'area', ph:'Ex: Muitos clientes perguntam o preço e somem. Outros falam que vão pensar e nunca retornam. Pacientes com medo do procedimento também param de responder após saber que é cirurgia. Comparação com clínicas mais baratas é frequente...' },
   { id:'story', title:'Qual foi o resultado mais marcante que você gerou?', hint:'Pense num cliente que ficou muito satisfeito. O que mudou para ele depois do seu serviço?', type:'area', ph:'Ex: Um casal veio na lua de mel sem grandes expectativas. Nos mandaram uma mensagem 3 meses depois dizendo que foi a melhor experiência da vida deles juntos...' },
-  { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' }
+  { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' },
+  { id:'email', title:'Onde enviamos uma cópia dos seus scripts?', hint:'Opcional — mas recomendamos preencher para receber melhorias e novidades do sistema.', type:'email', ph:'seu@email.com.br' }
 ];
 
 function show(id) {
@@ -404,6 +405,8 @@ function renderQ() {
     body = `<textarea class="q-input" rows="5" placeholder="${q.ph||''}" oninput="S.a['${q.id}']=this.value">${S.a[q.id]||''}</textarea>`;
   } else if (q.type==='svcs') {
     body = renderSvcs();
+  } else if (q.type==='email') {
+    body = `<input class="q-input" type="email" placeholder="${q.ph||''}" value="${S.a[q.id]||''}" oninput="S.a['${q.id}']=this.value"><p style="font-size:12px;color:var(--text-muted);margin-top:8px;">✓ Opcional — você pode pular esta etapa clicando em "Gerar meus scripts"</p>`;
   } else if (q.type==='ch') {
     const sel = S.a['ch']||[];
     body = '<div class="ch-opts">'+
@@ -484,6 +487,7 @@ function isValid() {
   if (q.type==='text'||q.type==='area'||q.type==='objarea') return (S.a[q.id]||'').trim().length>3;
   if (q.type==='svcs') return S.svcs.some(s=>s.name.trim());
   if (q.type==='ch') return S.a['ch']&&S.a['ch'].length>0;
+  if (q.type==='email') return true; // optional
   return true;
 }
 
@@ -553,7 +557,7 @@ Retorne APENAS JSON válido sem markdown:
     const res = await fetch('/api/generate', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({prompt})
+      body: JSON.stringify({prompt, userData: S.a})
     });
 
     clearInterval(iv);
