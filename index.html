@@ -550,8 +550,15 @@ REGRAS:
 - Para o follow-up, considere os comportamentos de sumiço informados (ex: some após ver preço)
 - Adapte ao segmento e tom do negócio
 
+FORMATO DOS SCRIPTS:
+- Use [NOME DO CLIENTE] onde o atendente deve inserir o nome da pessoa
+- Use [NOME DO NEGÓCIO] onde aparecer o nome do negócio (já preenchido com o nome real)
+- Use [SERVIÇO] onde o atendente deve inserir o serviço que o lead mencionou
+- No início de cada script, adicione uma linha: ⏱ QUANDO USAR: [instrução curta]
+- No final de cada script, adicione: 🔵 PERSONALIZE: [o que trocar, em uma linha]
+
 Retorne APENAS JSON válido sem markdown:
-{"recepcao":{"whatsapp":"script whatsapp","instagram":"script instagram"},"qualificacao":{"p1":"pergunta 1","p2":"pergunta 2","p3":"pergunta 3"},"apresentacao":{"problema":"frase problema","resultado":"frase resultado","explicacao":"frase explicacao","social":"frase social","confirmacao":"pergunta confirmacao"},"objecoes":{"caro":{"a":"acolhe","r":"reframe","c":"confirma"},"pensar":{"a":"...","r":"...","c":"..."},"conjuge":{"a":"...","r":"...","c":"..."},"momento":{"a":"...","r":"...","c":"..."},"concorrente":{"a":"...","r":"...","c":"..."}},"followup":{"d1":"msg dia 1","d3":"msg dia 3","d7":"msg dia 7","d15":"msg dia 15"}}`;
+{"bloco0":{"saudacao_whatsapp":"mensagem de saudação automática para WhatsApp Business com [COLCHETES] onde personalizar","saudacao_instagram":"mensagem de saudação automática para Instagram DM com [COLCHETES]","ausencia":"mensagem de ausência para fora do horário com [COLCHETES]","config_whatsapp":"passo a passo simples em 3 passos de como configurar no WhatsApp Business","config_instagram":"passo a passo simples em 3 passos de como configurar no Instagram"},"recepcao":{"whatsapp":"script com ⏱ QUANDO USAR e 🔵 PERSONALIZE","instagram":"script com ⏱ QUANDO USAR e 🔵 PERSONALIZE"},"qualificacao":{"p1":"pergunta com ⏱ QUANDO USAR","p2":"pergunta com ⏱ QUANDO USAR","p3":"pergunta com ⏱ QUANDO USAR"},"apresentacao":{"problema":"frase com [COLCHETES]","resultado":"frase com [COLCHETES]","explicacao":"frase com [COLCHETES]","social":"frase com [COLCHETES]","confirmacao":"pergunta de confirmação"},"objecoes":{"caro":{"a":"acolhe","r":"redireciona","c":"confirma com pergunta"},"pensar":{"a":"...","r":"...","c":"..."},"conjuge":{"a":"...","r":"...","c":"..."},"momento":{"a":"...","r":"...","c":"..."},"concorrente":{"a":"...","r":"...","c":"..."}},"followup":{"d1":"msg dia 1 com ⏱ 24h após o contato inicial","d3":"msg dia 3 com ⏱ 3 dias após o contato inicial","d7":"msg dia 7 com ⏱ 1 semana após o contato inicial","d15":"msg dia 15 com ⏱ 2 semanas após o contato inicial"}}`;
 
   try {
     const res = await fetch('/api/generate', {
@@ -585,57 +592,108 @@ function renderScripts(sc, chTxt) {
   const hasWA = chTxt.includes('WhatsApp')||!hasIG;
   let h='';
 
+  // BLOCO 0 — Saudação Automática
+  if(sc.bloco0) {
+    let b0 = `<div class="tip-box" style="margin-bottom:16px;">🤖 Configure uma vez e funciona sozinho — antes mesmo de você responder.</div>`;
+
+    if(hasWA && sc.bloco0.saudacao_whatsapp) {
+      b0 += rScript('💬 Saudação — WhatsApp Business', sc.bloco0.saudacao_whatsapp);
+    }
+    if(hasIG && sc.bloco0.saudacao_instagram) {
+      b0 += rScript('📸 Saudação — Instagram DM', sc.bloco0.saudacao_instagram);
+    }
+    if(sc.bloco0.ausencia) {
+      b0 += rScript('🌙 Mensagem de Ausência (fora do horário)', sc.bloco0.ausencia);
+    }
+
+    // Config instructions
+    b0 += `<div style="margin-top:20px;">`;
+    if(hasWA && sc.bloco0.config_whatsapp) {
+      b0 += `<div class="obj-block" style="margin-bottom:12px;">
+        <div class="obj-header">⚙️ Como configurar no WhatsApp Business</div>
+        <div class="obj-body" style="font-size:13px;color:var(--text-soft);line-height:1.7;white-space:pre-line;">${sc.bloco0.config_whatsapp}</div>
+      </div>`;
+    }
+    if(hasIG && sc.bloco0.config_instagram) {
+      b0 += `<div class="obj-block">
+        <div class="obj-header">⚙️ Como configurar no Instagram</div>
+        <div class="obj-body" style="font-size:13px;color:var(--text-soft);line-height:1.7;white-space:pre-line;">${sc.bloco0.config_instagram}</div>
+      </div>`;
+    }
+    b0 += `</div>`;
+
+    h += rSec('🤖','Bloco 0 — Saudação Automática', b0);
+  }
+
+  // BLOCO 1 — Recepção
   h+=rSec('💬','Bloco 1 — Recepção',`
-    ${hasWA?rScript('WhatsApp',sc.recepcao.whatsapp):''}
-    ${hasIG?rScript('Instagram DM',sc.recepcao.instagram):''}
-    <div class="tip-box">💡 Envie em até 5 minutos após o primeiro contato. A velocidade é decisiva.</div>
+    <div class="tip-box" style="margin-bottom:16px;">⚡ Regra de ouro: responda em até 5 minutos. Depois disso o lead esfria e começa a comparar com o concorrente.</div>
+    ${hasWA?rScript('💬 WhatsApp',sc.recepcao.whatsapp):''}
+    ${hasIG?rScript('📸 Instagram DM',sc.recepcao.instagram):''}
   `);
 
+  // BLOCO 2 — Qualificação
   h+=rSec('🔍','Bloco 2 — Qualificação',`
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Uma pergunta por vez, conectada ao que o lead respondeu. Nunca dispare as três de uma vez.</p>
-    ${rScript('Pergunta 1',sc.qualificacao.p1)}
-    ${rScript('Pergunta 2',sc.qualificacao.p2)}
-    ${rScript('Pergunta 3',sc.qualificacao.p3)}
+    <div class="tip-box" style="margin-bottom:16px;">📌 Regra: uma pergunta por vez. Sempre conectada ao que o lead respondeu. Nunca dispare as três de uma vez — parece interrogatório.</div>
+    ${rScript('Pergunta 1 — use após a resposta da recepção',sc.qualificacao.p1)}
+    ${rScript('Pergunta 2 — use para aprofundar',sc.qualificacao.p2)}
+    ${rScript('Pergunta 3 — use para entender urgência',sc.qualificacao.p3)}
   `);
 
-  h+=rSec('🎯','Bloco 3 — Apresentação (método PRES)',`
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Adapte com as palavras que o lead usou na conversa.</p>
-    ${rScript('P — Problema',sc.apresentacao.problema)}
-    ${rScript('R — Resultado',sc.apresentacao.resultado)}
-    ${rScript('E — Explicação',sc.apresentacao.explicacao)}
-    ${rScript('S — Social',sc.apresentacao.social)}
-    ${rScript('Confirmação (antes do preço)',sc.apresentacao.confirmacao)}
+  // BLOCO 3 — Apresentação PRES
+  h+=rSec('🎯','Bloco 3 — Apresentação do Serviço',`
+    <div class="tip-box" style="margin-bottom:16px;">💡 Método PRES: Problema → Resultado → Explicação → Social. Use as palavras que o lead usou — não o nome técnico do serviço.</div>
+    ${rScript('P — Problema (repita a dor que ele mencionou)',sc.apresentacao.problema)}
+    ${rScript('R — Resultado (mostre onde ele vai chegar)',sc.apresentacao.resultado)}
+    ${rScript('E — Explicação (como funciona, de forma simples)',sc.apresentacao.explicacao)}
+    ${rScript('S — Social (prova de que funciona)',sc.apresentacao.social)}
+    <div style="margin-top:8px;margin-bottom:4px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">✅ Confirmação — envie antes de falar o preço</div>
+    <div class="stext" style="margin-bottom:0;">${sc.apresentacao.confirmacao}</div>
+    <div class="tip-box" style="margin-top:12px;">💰 Só fale o preço depois que o lead confirmar que faz sentido. Antes disso o preço não tem contexto.</div>
   `);
 
+  // BLOCO 4 — Objeções
   const objs=[
-    {k:'caro',l:'"Tá caro"'},{k:'pensar',l:'"Vou pensar"'},
-    {k:'conjuge',l:'"Vou falar com meu parceiro(a)"'},
-    {k:'momento',l:'"Agora não é o momento"'},{k:'concorrente',l:'"Vi mais barato"'}
+    {k:'caro',l:'"Tá caro"',d:'Não enxergou valor suficiente ainda'},
+    {k:'pensar',l:'"Vou pensar e te retorno"',d:'Insegurança ou falta de urgência'},
+    {k:'conjuge',l:'"Vou falar com meu parceiro(a)"',d:'Medo de tomar a decisão errada'},
+    {k:'momento',l:'"Agora não é o momento"',d:'Falta de urgência real'},
+    {k:'concorrente',l:'"Vi mais barato em outro lugar"',d:'Comparando sem critério'}
   ];
-  let objH=`<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Método ARC: Acolhe → Reframe → Confirma. Sempre termine com uma pergunta.</p>`;
+  let objH=`<div class="tip-box" style="margin-bottom:16px;">🧭 Método ARC: <strong>A</strong>colhe → <strong>R</strong>edireciona → <strong>C</strong>onferma com uma pergunta. Quem pergunta conduz. Quem afirma defende.</div>`;
   objs.forEach(o=>{
     if(sc.objecoes[o.k]) objH+=`
       <div class="obj-block">
-        <div class="obj-header">${o.l}</div>
+        <div class="obj-header">
+          ${o.l}
+          <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;">— ${o.d}</span>
+        </div>
         <div class="obj-body">
-          <div class="arc-item"><span class="arc-lbl">A</span><span class="arc-txt">${sc.objecoes[o.k].a}</span></div>
-          <div class="arc-item"><span class="arc-lbl">R</span><span class="arc-txt">${sc.objecoes[o.k].r}</span></div>
-          <div class="arc-item"><span class="arc-lbl">C</span><span class="arc-txt">${sc.objecoes[o.k].c}</span></div>
+          <div class="arc-item"><span class="arc-lbl">A — Acolhe</span><span class="arc-txt">${sc.objecoes[o.k].a}</span></div>
+          <div class="arc-item"><span class="arc-lbl">R — Redireciona</span><span class="arc-txt">${sc.objecoes[o.k].r}</span></div>
+          <div class="arc-item"><span class="arc-lbl">C — Confirma</span><span class="arc-txt">${sc.objecoes[o.k].c}</span></div>
         </div>
       </div>`;
   });
   h+=rSec('🛡️','Bloco 4 — Quebra de Objeções',objH);
 
+  // BLOCO 5 — Follow-up
   const fus=[
-    {k:'d1',l:'Dia 1',t:'Leve, sem pressão'},
-    {k:'d3',l:'Dia 3',t:'Generoso, sem cobrar'},
-    {k:'d7',l:'Dia 7',t:'Urgência real'},
-    {k:'d15',l:'Dia 15',t:'Saída honesta'}
+    {k:'d1',l:'Dia 1',t:'24h após o contato inicial',d:'Tom: leve, sem pressão. Reacenda a conversa.'},
+    {k:'d3',l:'Dia 3',t:'3 dias após o contato inicial',d:'Tom: generoso. Entregue algo de valor — não cobre.'},
+    {k:'d7',l:'Dia 7',t:'1 semana após o contato inicial',d:'Tom: específico. Crie uma urgência real — não inventada.'},
+    {k:'d15',l:'Dia 15',t:'2 semanas após o contato inicial',d:'Tom: honesto. Dê uma saída digna — paradoxalmente converte mais.'}
   ];
-  let fuH=`<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Cada mensagem precisa entregar algo — nunca mande só "viu minha mensagem?"</p>`;
+  let fuH=`<div class="tip-box" style="margin-bottom:16px;">📬 Cada mensagem precisa entregar algo. Nunca mande só "viu minha mensagem?" ou "sumiu?". Sempre tenha um motivo real para entrar em contato.</div>`;
   fus.forEach(f=>{
     fuH+=`<div class="fu-block">
-      <div class="fu-header"><span>${f.l}</span><small>${f.t}</small></div>
+      <div class="fu-header">
+        <div>
+          <span>${f.l}</span>
+          <small style="display:block;margin-top:2px;">${f.t}</small>
+        </div>
+        <small>${f.d}</small>
+      </div>
       <div class="fu-body">${sc.followup[f.k]}</div>
     </div>`;
   });
