@@ -176,7 +176,7 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
 .fu-header { padding:12px 20px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
 .fu-header span { font-size:14px; font-weight:700; color:var(--dark); }
 .fu-header small { font-size:11px; color:var(--text-muted); }
-.fu-body { padding:14px 20px; font-size:13px; color:var(--text); line-height:1.7; white-space:pre-line; }
+.fu-body { padding:14px 20px; font-size:13px; color:var(--text); line-height:1.7; white-space:pre-line; position:relative; }
 .result-actions { display:flex; gap:12px; margin-top:32px; flex-wrap:wrap; }
 .btn-print { display:flex; align-items:center; gap:8px; background:var(--dark); color:white; border:none; border-radius:100px; padding:12px 24px; font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
 .btn-print:hover { background:var(--dark2); }
@@ -363,7 +363,9 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
     <div id="err-box" class="err-box" style="display:none"></div>
     <div id="scripts-output"></div>
     <div class="result-actions">
-      <button class="btn-print" onclick="window.print()">🖨️ Salvar / Imprimir</button>
+      <div style="display:flex;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:100px;padding:10px 20px;font-size:13px;color:#92400e;">
+          ⭐ <strong>PDF formatado</strong> — disponível na versão Premium, em breve.
+        </div>
       <button class="btn-restart" onclick="restartForm()">↩ Gerar novos scripts</button>
     </div>
   </div>
@@ -768,6 +770,7 @@ function renderScripts(sc, chTxt) {
   ];
   let fuH=`<div class="tip-box" style="margin-bottom:16px;">📬 Cada mensagem precisa entregar algo. Nunca mande só "viu minha mensagem?" ou "sumiu?". Sempre tenha um motivo real para entrar em contato.</div>`;
   fus.forEach(f=>{
+    const fuId = 'fu_'+Math.random().toString(36).substr(2,7);
     fuH+=`<div class="fu-block">
       <div class="fu-header">
         <div>
@@ -776,7 +779,10 @@ function renderScripts(sc, chTxt) {
         </div>
         <small>${f.d}</small>
       </div>
-      <div class="fu-body">${sc.followup[f.k]}</div>
+      <div class="fu-body" id="${fuId}" data-clean="${encodeURIComponent(sc.followup[f.k])}">
+        <button class="copy-btn" onclick="cpyScript('${fuId}')">Copiar</button>
+        ${sc.followup[f.k]}
+      </div>
     </div>`;
   });
   h+=rSec('🔄','Bloco 5 — Follow-up',fuH);
