@@ -222,7 +222,7 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
   <section class="hero">
     <div>
       <div class="hero-tag">100% Gratuito · Versão Beta</div>
-      <h1>Atenda melhor.<br>Feche <em>mais.</em></h1>
+      <h1>Atenda melhor.<br>Converta <em>mais.</em></h1>
       <p class="hero-sub">Responda algumas perguntas sobre o seu negócio e receba scripts de atendimento personalizados — prontos pra usar no WhatsApp e Instagram.</p>
       <button class="hero-cta" onclick="startForm()">Criar meus scripts agora →</button>
       <div class="hero-cta-note">✓ Gratuito &nbsp;·&nbsp; ✓ Sem cadastro &nbsp;·&nbsp; ✓ Pronto em 5 minutos</div>
@@ -272,7 +272,7 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
 
   <section class="cta-section">
     <div class="badge-free">✓ Gratuito durante o Beta</div>
-    <h2>Pronto pra atender melhor e fechar mais?</h2>
+    <h2>Pronto pra atender melhor e converter mais?</h2>
     <p>Leva menos de 5 minutos. Sem cadastro, sem cartão de crédito.</p>
     <button class="hero-cta" onclick="startForm()">Gerar meus scripts agora →</button>
   </section>
@@ -287,9 +287,12 @@ footer { background:var(--dark); color:rgba(255,255,255,0.4); text-align:center;
       <span>Sistema de Conversão</span>
       <small>by Bruno Komori</small>
     </div>
-    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 10</div>
+    <div id="step-counter" style="font-size:13px; color:var(--text-muted);">Passo 1 de 11</div>
   </div>
   <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
+  <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:10px 32px;font-size:13px;color:#92400e;display:flex;align-items:center;gap:8px;">
+    💡 <strong>Dica:</strong> Quanto mais detalhes você compartilhar, mais personalizados e eficazes serão os seus scripts. Vale a pena dedicar alguns minutos!
+  </div>
   <div class="form-body">
     <div class="form-container">
       <div id="q-area"></div>
@@ -352,15 +355,21 @@ const Qs = [
       {i:'✨',l:'Outro',d:'Meu segmento não está listado'}
     ]
   },
-  { id:'name', title:'Qual é o nome do seu negócio?', hint:'Pode ser seu nome, o nome da empresa ou como seus clientes te chamam.', type:'text', ph:'Ex: Pousada Rangai, Dr. Carlos Souza, Studio Ana Lima...' },
-  { id:'desc', title:'Descreva seu negócio em 2 frases.', hint:'Como você apresentaria para um amigo? Seja natural, sem formalidade.', type:'area', ph:'Ex: Somos uma pousada em Maragogi com chalés à beira-mar. Oferecemos uma experiência tranquila para casais e famílias que buscam descanso real...' },
-  { id:'client', title:'Quem é seu cliente ideal?', hint:'Não pela idade ou renda — descreva pelo problema ou desejo que ele tem quando chega até você.', type:'area', ph:'Ex: Casais que querem fugir da rotina e ter dias de descanso real, sem abrir mão de conforto e boa gastronomia...' },
-  { id:'svcs', title:'Quais são seus principais serviços?', hint:'Para cada um, escreva o nome e o resultado real para o cliente — não o nome técnico.', type:'svcs' },
+  { id:'name', title:'Qual é o nome do seu negócio?', hint:'Pode ser seu nome, o nome da empresa ou como seus clientes te chamam.', type:'text', ph:'Ex: Pousada Rangai, Clínica Bem Estar, Studio Conexão, Reforma Fácil...' },
+  { id:'desc', title:'Descreva seu negócio em 2 frases.', hint:'Como você apresentaria para um amigo? Seja natural, sem formalidade. Detalhes sobre o seu estilo de atendimento fazem toda a diferença nos scripts.', type:'area', ph:'Ex: Somos uma pousada em Maragogi com chalés à beira-mar. Oferecemos uma experiência tranquila para casais e famílias que buscam descanso real...' },
+  { id:'client', title:'Quem é seu cliente ideal?', hint:'Não pela idade ou renda — descreva pelo problema ou desejo que ele tem quando chega até você. Quanto mais específico, mais os scripts vão ressoar com quem você quer atrair.', type:'area', ph:'Ex: Casais que querem fugir da rotina e ter dias de descanso real, sem abrir mão de conforto e boa gastronomia...' },
+  { id:'svcs_type', title:'Como é a estrutura dos seus serviços?', hint:'Isso nos ajuda a gerar scripts mais precisos para o seu tipo de negócio.', type:'opts',
+    opts:[
+      {i:'🎯',l:'Tenho um serviço principal',d:'Meu negócio é focado em um serviço ou produto específico'},
+      {i:'📋',l:'Tenho vários serviços',d:'Atendo com múltiplas especialidades ou categorias de serviço'}
+    ]
+  },
+  { id:'svcs', title:'Quais são seus serviços?', hint:'Quanto mais claro você for aqui, mais precisos ficam os seus scripts.', type:'svcs_dynamic' },
   { id:'diff', title:'Por que escolher você e não o concorrente?', hint:'Seja honesto. O que você faz diferente que seus clientes percebem e valorizam?', type:'area', ph:'Ex: Diferente das grandes pousadas, aqui o atendimento é personalizado. Cada hóspede é tratado pelo nome e as preferências são lembradas...' },
-  { id:'objections', title:'Quais objeções e comportamentos seus clientes têm?', hint:'Compartilhe o que eles falam E o que fazem — ex: somem após saber o preço, comparam com concorrente, pedem desconto. Quanto mais real, melhores os scripts.', type:'area', ph:'Ex: Muitos clientes perguntam o preço e somem. Outros falam que vão pensar e nunca retornam. Pacientes com medo do procedimento também param de responder após saber que é cirurgia. Comparação com clínicas mais baratas é frequente...' },
+  { id:'objections', title:'Quais objeções e comportamentos seus clientes têm?', hint:'Compartilhe o que eles falam E o que fazem. Ex: somem após saber o preço, pedem desconto, comparam com concorrente. Quanto mais específico você for, mais certeiros serão os scripts de objeção.', type:'area', ph:'Ex: Muitos clientes perguntam o preço e somem. Outros falam que vão pensar e nunca retornam. Pacientes com medo do procedimento também param de responder após saber que é cirurgia. Comparação com clínicas mais baratas é frequente...' },
   { id:'story', title:'Algum cliente ficou satisfeito e te deu um retorno positivo?', hint:'Pode ser um elogio, uma mensagem, uma avaliação ou um cliente fiel que sempre volta. Não precisa ser algo grandioso — qualquer retorno positivo já serve.', type:'area', ph:'Ex: Uma cliente me mandou mensagem dizendo que nunca tinha visto um serviço tão cuidadoso. Ou: Tenho um cliente que me chama todo mês há 2 anos e sempre indica amigos...' },
   { id:'ch', title:'Onde você faz seu atendimento?', hint:'Selecione os canais onde você conversa com seus clientes.', type:'ch' },
-  { id:'email', title:'Onde enviamos uma cópia dos seus scripts?', hint:'Opcional — mas recomendamos preencher para receber melhorias e novidades do sistema.', type:'email', ph:'seu@email.com.br' }
+  { id:'email', title:'Qual é o seu email?', hint:'Necessário para liberar a geração dos seus scripts. Seus scripts serão exibidos na próxima tela — não se preocupe, não enviaremos spam.', type:'email', ph:'seu@email.com.br' }
 ];
 
 function show(id) {
@@ -403,8 +412,9 @@ function renderQ() {
     body = `<input class="q-input" type="text" placeholder="${q.ph||''}" value="${S.a[q.id]||''}" oninput="S.a['${q.id}']=this.value">`;
   } else if (q.type==='area'||q.type==='objarea') {
     body = `<textarea class="q-input" rows="5" placeholder="${q.ph||''}" oninput="S.a['${q.id}']=this.value">${S.a[q.id]||''}</textarea>`;
-  } else if (q.type==='svcs') {
-    body = renderSvcs();
+  } else if (q.type==='svcs'||q.type==='svcs_dynamic') {
+    const isSingle = S.a['svcs_type'] === 'Tenho um serviço principal';
+    body = isSingle ? renderSvcsSingle() : renderSvcsMultiple();
   } else if (q.type==='email') {
     body = `<input class="q-input" type="email" placeholder="${q.ph||''}" value="${S.a[q.id]||''}" oninput="S.a['${q.id}']=this.value"><p style="font-size:12px;color:var(--text-muted);margin-top:8px;">✓ Opcional — você pode pular esta etapa clicando em "Gerar meus scripts"</p>`;
   } else if (q.type==='ch') {
@@ -432,33 +442,32 @@ function renderQ() {
     </div>`;
 }
 
-function renderSvcs() {
+function renderSvcsSingle() {
+  const v = S.svcs[0] || {name:'', benefit:''};
+  S.svcs = [v];
   return `<div>
-    <div class="svc-header">
-      <div class="svc-col">Nome do serviço</div>
-      <div class="svc-col">Resultado real para o cliente</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Conte sobre o seu serviço principal — como ele se chama e o que o cliente conquista com ele.</p>
+    <div style="margin-bottom:10px;">
+      <div class="svc-col" style="margin-bottom:6px;">Nome do serviço</div>
+      <input class="q-input" type="text" placeholder="Ex: Clareamento dental, Consultoria financeira, Manutenção elétrica..." value="${v.name}" oninput="S.svcs[0].name=this.value">
     </div>
-    <div id="svc-rows">
-      ${S.svcs.map((s,i) => `
-        <div class="svc-row">
-          <input class="q-input" type="text" placeholder="Ex: Chalé à beira-mar" value="${s.name}" oninput="S.svcs[${i}].name=this.value">
-          <input class="q-input" type="text" placeholder="Ex: Acordar com o som do mar" value="${s.benefit}" oninput="S.svcs[${i}].benefit=this.value">
-        </div>`).join('')}
+    <div>
+      <div class="svc-col" style="margin-bottom:6px;">O que a pessoa conquista com esse serviço?</div>
+      <input class="q-input" type="text" placeholder="Ex: Sorriso mais claro em 1 sessão, Conta no azul sem estresse, Casa segura sem sustos..." value="${v.benefit}" oninput="S.svcs[0].benefit=this.value">
     </div>
-    <button class="add-svc" onclick="addSvc()">+ Adicionar outro serviço</button>
   </div>`;
 }
 
-function addSvc() {
-  S.svcs.push({name:'',benefit:''});
-  const i = S.svcs.length-1;
-  const row = document.createElement('div');
-  row.className = 'svc-row';
-  row.innerHTML = `
-    <input class="q-input" type="text" placeholder="Ex: Pacote de mergulho" value="" oninput="S.svcs[${i}].name=this.value">
-    <input class="q-input" type="text" placeholder="Ex: Experiência inesquecível no mar" value="" oninput="S.svcs[${i}].benefit=this.value">`;
-  document.getElementById('svc-rows').appendChild(row);
+function renderSvcsMultiple() {
+  return `<div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Liste suas principais especialidades ou áreas de atuação. Não precisa ser tudo — foque nas mais importantes.</p>
+    <textarea class="q-input" rows="5" 
+      placeholder="Ex: Implante dental, Clareamento, Ortodontia, Tratamento de canal&#10;&#10;Ou:&#10;Corte masculino, Coloração, Barba, Tratamentos capilares&#10;&#10;Ou:&#10;Personal training, Assessoria de corrida, Treino online"
+      oninput="S.a['svcs_text']=this.value">${S.a['svcs_text']||''}</textarea>
+  </div>`;
 }
+
+function addSvc() {}
 
 function selOpt(qId, val, el) {
   S.a[qId]=val;
@@ -485,9 +494,13 @@ function isValid() {
   const q = Qs[S.step];
   if (q.type==='opts') return !!S.a[q.id];
   if (q.type==='text'||q.type==='area'||q.type==='objarea') return (S.a[q.id]||'').trim().length>3;
-  if (q.type==='svcs') return S.svcs.some(s=>s.name.trim());
+  if (q.type==='svcs'||q.type==='svcs_dynamic') {
+    const isSingle = S.a['svcs_type'] === 'Tenho um serviço principal';
+    if(isSingle) return S.svcs[0] && S.svcs[0].name.trim().length > 0;
+    return (S.a['svcs_text']||'').trim().length > 3;
+  }
   if (q.type==='ch') return S.a['ch']&&S.a['ch'].length>0;
-  if (q.type==='email') return true; // optional
+  if (q.type==='email') return (S.a[q.id]||'').includes('@') && (S.a[q.id]||'').includes('.');
   return true;
 }
 
@@ -498,7 +511,14 @@ function nextStep() {
     setTimeout(()=>c.style.outline='',1200);
     return;
   }
-  if (Qs[S.step].id==='svcs') S.a['svcs']=S.svcs.filter(s=>s.name.trim());
+  if (Qs[S.step].id==='svcs'||Qs[S.step].type==='svcs_dynamic') {
+    const isSingle = S.a['svcs_type'] === 'Tenho um serviço principal';
+    if(isSingle) {
+      S.a['svcs'] = S.svcs.filter(s=>s.name.trim());
+    } else {
+      S.a['svcs'] = (S.a['svcs_text']||'').split(/[,\n]/).map(s=>({name:s.trim(),benefit:''})).filter(s=>s.name);
+    }
+  }
   if (S.step<Qs.length-1) { S.step++; renderQ(); window.scrollTo(0,0); }
   else generateScripts();
 }
@@ -540,16 +560,26 @@ ${svcsStr}
 - Melhor história: ${S.a['story']}
 - Canal: ${chTxt}
 
-REGRAS:
-- Linguagem natural, calorosa e brasileira
-- WhatsApp: pode ser um pouco mais longo
-- Instagram DM: mais curto e direto
-- Use emojis com moderação (1-2 por mensagem)
+PROPÓSITO DO SISTEMA:
+Auxiliar prestadores de serviço a atender melhor, persuadir com respeito e vender mais. O foco é ajudar — nunca manipular, pressionar ou criar urgência falsa. O cliente deve sempre se sentir respeitado e com autonomia de decisão.
+
+REGRAS DE LINGUAGEM:
+- Adapte o tom ao segmento — clínica médica pede mais formalidade, salão pede mais descontração, academia pede energia
+- Use linguagem inclusiva e neutra — evite assumir gênero do atendente ou do cliente
+- Use "a pessoa", "o cliente", "parceiro(a)" quando necessário
+- Nunca use linguagem machista, excludente ou preconceituosa de qualquer tipo
+
+REGRAS DE CANAL:
+- WhatsApp: pode ser um pouco mais longo e informal
+- Instagram DM: mais curto, direto e visual
+- Use emojis com moderação (1-2 por mensagem) e apenas quando o tom do negócio permitir
+
+REGRAS DE CONTEÚDO:
+- Use técnicas atuais de vendas consultivas — escuta ativa, perguntas abertas, identificação de dor real
 - Nunca mencione preço na recepção e qualificação
-- Use as objeções reais informadas para criar scripts de objeção personalizados e específicos
-- Para o follow-up, considere os comportamentos de sumiço informados (ex: some após ver preço)
-- Adapte ao segmento e tom do negócio
-- O Bloco 0 é para quem usa WhatsApp Business ou Instagram com perfil comercial — deixe as mensagens curtas, acolhedoras e com uma pergunta simples de qualificação no final
+- Use as objeções reais informadas para criar scripts personalizados e específicos
+- Para o follow-up, considere os comportamentos de sumiço informados
+- O Bloco 0 é para WhatsApp Business ou Instagram com perfil comercial — mensagens curtas, acolhedoras e com uma pergunta simples de qualificação
 
 FORMATO DOS SCRIPTS:
 - Use [NOME DO CLIENTE] onde o atendente deve inserir o nome da pessoa
@@ -660,7 +690,7 @@ function renderScripts(sc, chTxt) {
   const objs=[
     {k:'caro',l:'"Tá caro"',d:'Não enxergou valor suficiente ainda'},
     {k:'pensar',l:'"Vou pensar e te retorno"',d:'Insegurança ou falta de urgência'},
-    {k:'conjuge',l:'"Vou falar com meu parceiro(a)"',d:'Medo de tomar a decisão errada'},
+    {k:'conjuge',l:'"Preciso consultar alguém antes"',d:'Medo de tomar a decisão errada'},
     {k:'momento',l:'"Agora não é o momento"',d:'Falta de urgência real'},
     {k:'concorrente',l:'"Vi mais barato em outro lugar"',d:'Comparando sem critério'}
   ];
